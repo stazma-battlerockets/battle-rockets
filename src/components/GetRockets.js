@@ -8,7 +8,7 @@ const GetRockets = () => {
     axios({
       url: "https://api.spacexdata.com/v4/rockets",
     }).then((results) => {
-      console.log(results.data);
+      // console.log(results.data);
     });
   }, []);
 

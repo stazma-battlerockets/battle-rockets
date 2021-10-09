@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
+import Draggable from 'react-draggable';
 
 const BattleRocketGrid = () => {
 
-  const [ship, setShip] = useState({});
+  const [ship, setShip] = useState({
+    name: "default",
+    coords: [[],[]]
+  });
 
   const gridArray = [];
 
@@ -35,45 +39,66 @@ const BattleRocketGrid = () => {
     }
   ];
 
-  // console.log(ships);
 
   const handleClick = (shipType, index) => {
     // Our ship object
+    const orientation = 'horizontal';
     const newShip = allShips[shipType];
-
-    // Ship horizontal coords
-    newShip.coords[0] = newShip.coords[0].map((coord) => {
-      return coord + index;
+    
+    // Ship horizontal coords array
+    const newCoordsX = newShip.coords[0].map((coordX) => {
+      
+      return coordX + index;
     });
 
-    // Ship vertical coords
-    newShip.coords[1] = newShip.coords[1].map((coord) => {
-      return coord + index;
+    // Ship vertical coords array
+    const newCoordsY = newShip.coords[1].map((coordY) => {
+      return coordY + index;
     });
     
-    setShip(newShip);
+    const outOfBoundsX = newCoordsX.some(coordX => {
+      return (
+        Math.floor (coordX / 10) !== Math.floor (index / 10)
+      )
+    });
 
+    const outOfBoundsY = newCoordsY.some(coordY => coordY > 99);
+
+    // Logic to update the state if out of bounds dependent on orientation
+    if ((orientation === 'horizontal' && !outOfBoundsX) || (orientation === 'vertical' && !outOfBoundsY)) {
+      newShip.coords = [newCoordsX, newCoordsY];
+      setShip(newShip);
+    } 
 
   };
 
 
+  const [clicked, setClicked] = useState(false);
+
+
   return (
-    <section className="grid">
-      <div className="gridContent">
-        {
-          gridArray.map((gridIndex) => {
-            return (
-              <div
-                // The 0 is hard coded for horizontal coords
-                className={`gridSquare ${ship.coords[0].includes(gridIndex) ? 'blue' : null}`}
-                key={`square${gridIndex}`}
-                // The 3 is hard coded for a battleship
-                onClick={() => handleClick(3, gridIndex)}></div>
-            )
-          })
-        }
-      </div>
-    </section >
+    <>
+      
+      <section className="grid">
+        <div className="gridContent">
+          {
+            gridArray.map((gridIndex) => {
+              return (
+                <div
+                  // The 0 is hard coded for horizontal coords
+                  className={`gridSquare ${ship.coords[0].includes(gridIndex) ? 'blue' : ''}`}
+                  key={`square${gridIndex}`}
+                  // The 3 is hard coded for a battleship
+                  onMouseEnter={clicked ? null : () => handleClick(3, gridIndex)}
+                  onClick={() => setClicked(true)}
+                
+                  ></div>
+              )
+            })
+          }
+        </div>
+      </section >
+    </>
   );
 };
 
