@@ -1,4 +1,10 @@
+import { useEffect, useState } from 'react'
+
 const PlayerSelection = () => {
+
+const [playerOne, setPlayerOne] = useState(false);
+const [playerTwo, setPlayerTwo] = useState(false);
+
   return (
     <section className="playerSelection">
       <form action="">
