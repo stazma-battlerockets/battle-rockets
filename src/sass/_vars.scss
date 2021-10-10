@@ -6,3 +6,9 @@ $navy: #003049;
 
 $bodyFont: "Teko", sans-serif;
 $headingFont: "Lato", sans-serif;
+
+@mixin shipSize($length) {
+  height: 50px;
+  width: $length * 50px;
+  background: $red;
+}
