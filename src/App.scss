@@ -24,6 +24,10 @@
   background-color: $red;
 }
 
+.placed {
+  display: none;
+}
+
 .gameBoard {
   display: flex;
   align-items: center;
