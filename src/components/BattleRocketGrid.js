@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const BattleRocketGrid = () => {
 
@@ -14,7 +14,7 @@ const BattleRocketGrid = () => {
       length: 3,
       placed: false,
     },
-    {
+    { 
       name: "cruiser",
       length: 3,
       placed: false,
@@ -43,6 +43,18 @@ const BattleRocketGrid = () => {
   // State to display the available ships to place on the grid
   const [availableShips, setAvailableShips] = useState(allShips);
 
+  // State to determine if overlap of current and placed ships
+  // const [overlap, setOverlap] = useState(false);
+
+  // const [gridSquareState, setGridSquareState] = useState({
+  //   empty: 'empty',
+  //   displayShip: 'displayShip',
+  //   hit: 'hit',
+  //   miss: 'miss',
+  //   ship_sunk: 'ship-sunk',
+  //   forbidden: 'forbidden',
+  // }); 
+
   // Initializing grid array
   const gridArray = [];
 
@@ -50,7 +62,7 @@ const BattleRocketGrid = () => {
     gridArray.push(i);
   }
 
-  // Used to toggle the orientation of the ship placement
+  // Used to toggle the orientation of the ship placement with a mouse right click
   const rotateShip = (e) => {
     if (e.button === 2) {
       setHorizontal(!horizontal);
@@ -58,27 +70,29 @@ const BattleRocketGrid = () => {
   };
 
   // Handling the placement of the ships in real time
-  const handleMouseEnter = (index) => {
+  const handleMouseEnter = (gridIndex) => {
     // Our ship position
-    let shipPosition = index;
+    let shipPosition = gridIndex;
 
     // currentShip state will be empty before any ship has been selected and after any ship has been placed 
     if (currentShip) {
+    
+        // New ship coords array
+        const newCoords = [];
 
-      // New ship coords array
-      const newCoords = [];
+        // Getting the new positions of each coordinate based on the chosen ship length and the orientation
+        for (let i = 0; i < currentShip.length; i++) {
+          newCoords.push(shipPosition);
+          shipPosition = (horizontal ? shipPosition + 1 : shipPosition + 10);
+        }
 
-      // Getting the new positions of each coordinate based on the chosen ship length and the orientation
-      for (let i = 0; i < currentShip.length; i++) {
-        newCoords.push(shipPosition);
-        shipPosition = (horizontal ? shipPosition + 1 : shipPosition + 10);
-      }
+        // Checking for overlaps in the placed vs current ship
 
-      // Logic to update the state if the coords are not out of bounds, dependent on orientation
-      if (!handleOutOfBounds(newCoords, index)) {
-        setCurrentShip({ ...currentShip, coords: newCoords });
-      }
 
+        // Logic to update the state if the coords are not out of bounds, dependent on orientation
+        if (!handleOutOfBounds(newCoords, gridIndex)) {
+          setCurrentShip({ ...currentShip, coords: newCoords });
+        }
     }
 
   };
@@ -103,14 +117,19 @@ const BattleRocketGrid = () => {
 
   // Placing current ship into placed ships
   const handlePlaceShip = () => {
-    // Set the currentShip into the placedShip state with property placed = true
-    setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
+    if (currentShip){
+      if (currentShip.coords !== undefined) {
+        // Set the currentShip into the placedShip state with property placed = true
+        setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
+    
+        // Filtering out the currentShip from the availableShips
+        setAvailableShips(availableShips.filter((ship) => ship.name !== currentShip.name));
+    
+        // Resetting the current ship
+        setCurrentShip(null);
+      }
+    }
 
-    // Filtering out the currentShip from the availableShips
-    setAvailableShips(availableShips.filter((ship) => ship.name !== currentShip.name));
-
-    // Resetting the current ship
-    setCurrentShip(null);
   }
 
 
@@ -125,9 +144,11 @@ const BattleRocketGrid = () => {
   const occupiedPlacedShip = (gridIndex) => {
 
     // Should return TRUE if any of the placed ships' coords include the gridIndex
-    return (placedShips.some((placedShip) => {
-      return placedShip.coords.includes(gridIndex);
-    }));
+    return (placedShips.some(
+      (placedShip) => {
+        return placedShip.coords.includes(gridIndex);
+    }
+    ));
 
   };
 
@@ -142,14 +163,25 @@ const BattleRocketGrid = () => {
     }
   };
 
+  
   // Checking to see if a particular square of the grid is occupied using either the placed or current ships
   const occupiedGridSquare = (gridIndex) => {
 
     // Could change this in the future to allow for different occupations to display different colours
-    const isOccupied = (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex) ? "displayShip" : "");
+    let isOccupied = false;
+    
+    if (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)) {
+      isOccupied = "displayShip";
+    } else if (occupiedPlacedShip(gridIndex) && occupiedCurrentShip(gridIndex)) {
+      isOccupied = "forbidden";
+    } else {
+      isOccupied = "empty";
+    }
+    
     return isOccupied;
 
   };
+
 
 
   return (
@@ -178,7 +210,7 @@ const BattleRocketGrid = () => {
         {gridArray.map((gridIndex) => {
           return (
             <div
-              className={`gridSquare ${occupiedGridSquare(gridIndex) ? "displayShip" : ""}`}
+              className={`gridSquare ${occupiedGridSquare(gridIndex)}`}
               key={`square${gridIndex}`}
               onMouseEnter={() => handleMouseEnter(gridIndex)}
               onClick={handlePlaceShip} // Updating placedShips and availableShips states and setting currentShip back to null
