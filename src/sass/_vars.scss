@@ -10,6 +10,6 @@ $headingFont: "Lato", sans-serif;
 @mixin shipSize($length) {
   height: 50px;
   width: $length * 50px;
-  background: $red;
+  background: $yellow;
   box-shadow: 2px 2px $navy;
 }
