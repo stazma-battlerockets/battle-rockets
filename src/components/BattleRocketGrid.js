@@ -7,26 +7,36 @@ const BattleRocketGrid = () => {
       name: "destroyer",
       length: 2,
       placed: false,
+      isHit: [],
+      isSunk: false,
     },
     {
       name: "submarine",
       length: 3,
       placed: false,
+      isHit: [],
+      isSunk: false,
     },
     {
       name: "cruiser",
       length: 3,
       placed: false,
+      isHit: [],
+      isSunk: false,
     },
     {
       name: "battleship",
       length: 4,
       placed: false,
+      isHit: [],
+      isSunk: false,
     },
     {
       name: "carrier",
       length: 5,
       placed: false,
+      isHit: [],
+      isSunk: false,
     },
   ];
 
@@ -42,17 +52,8 @@ const BattleRocketGrid = () => {
   // State to display the available ships to place on the grid
   const [availableShips, setAvailableShips] = useState(allShips);
 
-  // State to determine if overlap of current and placed ships
-  // const [overlap, setOverlap] = useState(false);
-
-  // const [gridSquareState, setGridSquareState] = useState({
-  //   empty: 'empty',
-  //   displayShip: 'displayShip',
-  //   hit: 'hit',
-  //   miss: 'miss',
-  //   ship_sunk: 'ship-sunk',
-  //   forbidden: 'forbidden',
-  // });
+  //State to hold if user has added all ships to the grid and is ready for BATTLE!
+  const [shipsReady, setShipsReady] = useState(false);
 
   // Initializing grid array
   const gridArray = [];
@@ -85,7 +86,6 @@ const BattleRocketGrid = () => {
       }
 
       // Checking for overlaps in the placed vs current ship
-
       // Logic to update the state if the coords are not out of bounds, dependent on orientation
       if (!handleOutOfBounds(newCoords, gridIndex)) {
         setCurrentShip({ ...currentShip, coords: newCoords });
@@ -140,7 +140,6 @@ const BattleRocketGrid = () => {
           for (let i = 0; i < placedShips.length && !isMatch; i++) {
             let placedCoords = placedShips[i].coords;
             placedCoords.some(compareCoords);
-            console.log(isMatch);
           }
           if (!isMatch) {
             // Set the currentShip into the placedShip state with property placed = true
@@ -164,6 +163,7 @@ const BattleRocketGrid = () => {
     setCurrentShip(null);
     setPlacedShips([]);
     setAvailableShips(allShips);
+    setShipsReady(false);
   };
 
   // Checking to see if the ship has already placed in a particular square of the grid
@@ -171,6 +171,21 @@ const BattleRocketGrid = () => {
     // Should return TRUE if any of the placed ships' coords include the gridIndex
     return placedShips.some((placedShip) => {
       return placedShip.coords.includes(gridIndex);
+    });
+  };
+
+  //
+  const occupiedHitShip = (gridIndex) => {
+    // Should return TRUE if any of the placed ships' coords include the gridIndex
+    return placedShips.some((placedShip) => {
+      return placedShip.isHit.includes(gridIndex);
+    });
+  };
+
+  //
+  const occupiedSunkShip = (gridIndex) => {
+    return placedShips.some((placedShip) => {
+      return placedShip.isHit.includes(gridIndex) && placedShip.isSunk;
     });
   };
 
@@ -187,21 +202,55 @@ const BattleRocketGrid = () => {
 
   // Checking to see if a particular square of the grid is occupied using either the placed or current ships
   const occupiedGridSquare = (gridIndex) => {
-    // Could change this in the future to allow for different occupations to display different colours
-    let isOccupied = false;
+    let isOccupied = "empty";
 
     if (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)) {
       isOccupied = "displayShip";
-    } else if (
-      occupiedPlacedShip(gridIndex) &&
-      occupiedCurrentShip(gridIndex)
-    ) {
-      isOccupied = "forbidden";
-    } else {
-      isOccupied = "empty";
+    }
+
+    if (occupiedHitShip(gridIndex)) {
+      isOccupied = "hit";
+    }
+
+    if (occupiedSunkShip(gridIndex)) {
+      isOccupied = "sunk";
     }
 
     return isOccupied;
+  };
+
+  // Updating the isHit property for the hit ship
+  const changeIsHit = (ships, newIndex, square) => {
+    let newShips = [...ships];
+    let newShip = { ...ships[newIndex] };
+
+    newShips.splice(newIndex, 1);
+
+    const newShipHits = [...newShip.isHit, square];
+
+    if (newShipHits.length === newShip.coords.length) {
+      newShip = { ...newShip, isHit: newShipHits, isSunk: true };
+    } else {
+      newShip = { ...newShip, isHit: newShipHits };
+    }
+
+    newShips.splice(newIndex, 0, newShip);
+
+    return [...newShips];
+  };
+
+  const isHit = (e, target) => {
+    placedShips.map((placedShip, index) => {
+      placedShip.coords.forEach((coord) => {
+        if (coord === target && !placedShip.isHit.includes(target)) {
+          setPlacedShips(changeIsHit(placedShips, index, target));
+        }
+      });
+    });
+    if (e.target.classList.contains("empty")) {
+      e.target.classList.remove("empty");
+      e.target.classList.add("miss");
+    }
   };
 
   return (
@@ -219,11 +268,21 @@ const BattleRocketGrid = () => {
           );
         })}
 
-        <p>Right click to rotate. </p>
+        <p>Right click to rotate.</p>
 
         {/* Reset the grid and placed ships */}
-        <button onClick={resetGrid}>Reset Grid</button>
+        {placedShips.length !== 5 || !shipsReady ? (
+          <button onClick={resetGrid}>Reset Grid</button>
+        ) : null}
+
+        {/* Ready to play button only available once the ships are all placed */}
+        {placedShips.length === 5 ? (
+          <button onClick={() => setShipsReady(true)}>
+            {shipsReady ? "Readied" : "Ready to Play"}
+          </button>
+        ) : null}
       </div>
+
       <div
         className="gridContent"
         onMouseDown={rotateShip}
@@ -234,8 +293,11 @@ const BattleRocketGrid = () => {
             <div
               className={`gridSquare ${occupiedGridSquare(gridIndex)}`}
               key={`square${gridIndex}`}
+              id={`square${gridIndex}`}
               onMouseEnter={() => handleMouseEnter(gridIndex)}
-              onClick={handlePlaceShip} // Updating placedShips and availableShips states and setting currentShip back to null
+              onClick={
+                shipsReady ? (e) => isHit(e, gridIndex) : handlePlaceShip
+              } // Updating placedShips and availableShips states and setting currentShip back to null
             ></div>
           );
         })}
