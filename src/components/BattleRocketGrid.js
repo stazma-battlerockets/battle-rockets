@@ -42,6 +42,18 @@ const BattleRocketGrid = () => {
   // State to display the available ships to place on the grid
   const [availableShips, setAvailableShips] = useState(allShips);
 
+  // State to determine if overlap of current and placed ships
+  // const [overlap, setOverlap] = useState(false);
+
+  // const [gridSquareState, setGridSquareState] = useState({
+  //   empty: 'empty',
+  //   displayShip: 'displayShip',
+  //   hit: 'hit',
+  //   miss: 'miss',
+  //   ship_sunk: 'ship-sunk',
+  //   forbidden: 'forbidden',
+  // });
+
   // Initializing grid array
   const gridArray = [];
 
@@ -49,7 +61,7 @@ const BattleRocketGrid = () => {
     gridArray.push(i);
   }
 
-  // Used to toggle the orientation of the ship placement by right clicking on the grid
+  // Used to toggle the orientation of the ship placement with a mouse right click
   const rotateShip = (e) => {
     if (e.button === 2) {
       setHorizontal(!horizontal);
@@ -57,9 +69,9 @@ const BattleRocketGrid = () => {
   };
 
   // Handling the placement of the ships in real time
-  const handleMouseEnter = (index) => {
+  const handleMouseEnter = (gridIndex) => {
     // Our ship position
-    let shipPosition = index;
+    let shipPosition = gridIndex;
 
     // currentShip state will be empty before any ship has been selected and after any ship has been placed
     if (currentShip) {
@@ -72,8 +84,10 @@ const BattleRocketGrid = () => {
         shipPosition = horizontal ? shipPosition + 1 : shipPosition + 10;
       }
 
+      // Checking for overlaps in the placed vs current ship
+
       // Logic to update the state if the coords are not out of bounds, dependent on orientation
-      if (!handleOutOfBounds(newCoords, index)) {
+      if (!handleOutOfBounds(newCoords, gridIndex)) {
         setCurrentShip({ ...currentShip, coords: newCoords });
       }
     }
@@ -97,16 +111,20 @@ const BattleRocketGrid = () => {
 
   // Placing current ship into placed ships
   const handlePlaceShip = () => {
-    // Set the currentShip into the placedShip state with property placed = true
-    setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
+    if (currentShip) {
+      if (currentShip.coords !== undefined) {
+        // Set the currentShip into the placedShip state with property placed = true
+        setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
 
-    // Filtering out the currentShip from the availableShips
-    setAvailableShips(
-      availableShips.filter((ship) => ship.name !== currentShip.name)
-    );
+        // Filtering out the currentShip from the availableShips
+        setAvailableShips(
+          availableShips.filter((ship) => ship.name !== currentShip.name)
+        );
 
-    // Resetting the current ship
-    setCurrentShip(null);
+        // Resetting the current ship
+        setCurrentShip(null);
+      }
+    }
   };
 
   // Reset the whole grid and states
@@ -138,10 +156,19 @@ const BattleRocketGrid = () => {
   // Checking to see if a particular square of the grid is occupied using either the placed or current ships
   const occupiedGridSquare = (gridIndex) => {
     // Could change this in the future to allow for different occupations to display different colours
-    const isOccupied =
-      occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)
-        ? "displayShip"
-        : "";
+    let isOccupied = false;
+
+    if (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)) {
+      isOccupied = "displayShip";
+    } else if (
+      occupiedPlacedShip(gridIndex) &&
+      occupiedCurrentShip(gridIndex)
+    ) {
+      isOccupied = "forbidden";
+    } else {
+      isOccupied = "empty";
+    }
+
     return isOccupied;
   };
 
@@ -173,9 +200,7 @@ const BattleRocketGrid = () => {
         {gridArray.map((gridIndex) => {
           return (
             <div
-              className={`gridSquare ${
-                occupiedGridSquare(gridIndex) ? "displayShip" : ""
-              }`}
+              className={`gridSquare ${occupiedGridSquare(gridIndex)}`}
               key={`square${gridIndex}`}
               onMouseEnter={() => handleMouseEnter(gridIndex)}
               onClick={handlePlaceShip} // Updating placedShips and availableShips states and setting currentShip back to null

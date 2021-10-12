@@ -6,22 +6,22 @@
 .gridContent {
   width: 500px;
   height: 500px;
-  background: lightgray;
+  background: url("./assets/cartoon-background-with-stars_1110-892.jpg");
   display: flex;
   flex-wrap: wrap;
   margin: 2rem auto;
-  box-shadow: 10px 10px 10px black;
+  box-shadow: 10px 10px 10px $navy;
 }
 
 .gridSquare {
   width: 50px;
   height: 50px;
   outline: 1px solid white;
-  box-shadow: 2px 2px black;
+  box-shadow: 2px 2px $navy;
 }
 
 .displayShip {
-  background-color: $red;
+  background-color: $yellow;
 }
 
 .placed {
@@ -31,6 +31,10 @@
 .gameBoard {
   display: flex;
   align-items: center;
+}
+
+.forbidden {
+  background-color: $navy;
 }
 
 .shipSelection div {

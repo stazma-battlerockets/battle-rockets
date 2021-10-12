@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+// import { useEffect } from "react";
+// import axios from "axios";
 
-const GetRockets = () => {
-  const [rockets, setRocket] = useState([]);
+// const GetRockets = () => {
+//   useEffect(() => {
+//     axios({
+//       url: "https://api.spacexdata.com/v4/rockets",
+//     }).then((results) => {
+//     });
+//   }, []);
 
-  useEffect(() => {
-    axios({
-      url: "https://api.spacexdata.com/v4/rockets",
-    }).then((results) => {
-      // console.log(results.data);
-    });
-  }, []);
+//   return <div></div>;
+// };
 
-  return <div></div>;
-};
-
-export default GetRockets;
+// export default GetRockets;

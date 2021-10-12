@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+// import { useState } from 'react'
 
 const PlayerSelection = () => {
 
-const [playerOne, setPlayerOne] = useState(false);
-const [playerTwo, setPlayerTwo] = useState(false);
+// const [playerOne, setPlayerOne] = useState(false);
+// const [playerTwo, setPlayerTwo] = useState(false);
 
   return (
     <section className="playerSelection">

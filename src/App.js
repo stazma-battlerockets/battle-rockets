@@ -1,7 +1,7 @@
 import "./App.scss";
 import Header from "./components/Header";
 import PlayerSelection from "./components/PlayerSelection";
-import GetRockets from "./components/GetRockets";
+
 import BattleRocketGrid from "./components/BattleRocketGrid";
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
       <main>
         <PlayerSelection />
         <BattleRocketGrid />
-        <GetRockets />
+      
       </main>
     </div>
   );
