@@ -7,9 +7,11 @@ $navy: #003049;
 $bodyFont: "Teko", sans-serif;
 $headingFont: "Lato", sans-serif;
 
+$squareSize: 50px;
+
 @mixin shipSize($length) {
-  height: 50px;
-  width: $length * 50px;
+  height: $squareSize;
+  width: $length * $squareSize;
   background: $yellow;
   box-shadow: 2px 2px $navy;
 }
