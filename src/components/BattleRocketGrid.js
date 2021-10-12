@@ -113,16 +113,48 @@ const BattleRocketGrid = () => {
   const handlePlaceShip = () => {
     if (currentShip) {
       if (currentShip.coords !== undefined) {
-        // Set the currentShip into the placedShip state with property placed = true
-        setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
+        // If placedShips is empty - go ahead with the logic to place ships on the page as there is nothing to compare
+        if (!placedShips) {
+          // Set the currentShip into the placedShip state with property placed = true
+          setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
 
-        // Filtering out the currentShip from the availableShips
-        setAvailableShips(
-          availableShips.filter((ship) => ship.name !== currentShip.name)
-        );
+          // Filtering out the currentShip from the availableShips
+          setAvailableShips(
+            availableShips.filter((ship) => ship.name !== currentShip.name)
+          );
+          // Resetting the current ship
+          setCurrentShip(null);
+        } else {
+          // Local variable to check if ship coords are matching
+          let isMatch = false;
+          // Callback function to pass into .some() to compare coords between two arrays - currentShip.coords and placedship.coords
+          const compareCoords = (coords) => {
+            // Check currentShip length and we stop this loop if isMatch = true
+            for (let i = 0; i < currentShip.coords.length && !isMatch; i++) {
+              if (coords === currentShip.coords[i]) {
+                isMatch = true;
+              }
+            }
+          };
+          // Check placedShip length and we stop this loop if isMatch = true
+          for (let i = 0; i < placedShips.length && !isMatch; i++) {
+            let placedCoords = placedShips[i].coords;
+            placedCoords.some(compareCoords);
+            console.log(isMatch);
+          }
+          if (!isMatch) {
+            // Set the currentShip into the placedShip state with property placed = true
+            setPlacedShips([...placedShips, { ...currentShip, placed: true }]);
 
-        // Resetting the current ship
-        setCurrentShip(null);
+            // Filtering out the currentShip from the availableShips
+            setAvailableShips(
+              availableShips.filter((ship) => ship.name !== currentShip.name)
+            );
+
+            // Resetting the current ship
+            setCurrentShip(null);
+          }
+        }
       }
     }
   };
