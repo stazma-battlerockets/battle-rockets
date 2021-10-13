@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-const BattleRocketGrid = () => {
+const BattleRocketGrid = ({player}) => {
   // An array of objects -> ship name, X and Y coords and if ship has been placed
+
   const allShips = [
     {
       name: "destroyer",
@@ -240,7 +241,7 @@ const BattleRocketGrid = () => {
   };
 
   const isHit = (e, target) => {
-    placedShips.map((placedShip, index) => {
+    placedShips.forEach((placedShip, index) => {
       placedShip.coords.forEach((coord) => {
         if (coord === target && !placedShip.isHit.includes(target)) {
           setPlacedShips(changeIsHit(placedShips, index, target));
@@ -252,6 +253,8 @@ const BattleRocketGrid = () => {
       e.target.classList.add("miss");
     }
   };
+
+
 
   return (
     // setShip type value hardcoded for each ship div so that shipType is toggled depending on which div is clicked
@@ -278,7 +281,7 @@ const BattleRocketGrid = () => {
         {/* Ready to play button only available once the ships are all placed */}
         {placedShips.length === 5 ? (
           <button onClick={() => setShipsReady(true)}>
-            {shipsReady ? "Readied" : "Ready to Play"}
+            {shipsReady ? "Time for battle!" : "Ready to Play"}
           </button>
         ) : null}
       </div>
@@ -296,6 +299,7 @@ const BattleRocketGrid = () => {
               id={`square${gridIndex}`}
               onMouseEnter={() => handleMouseEnter(gridIndex)}
               onClick={
+
                 shipsReady ? (e) => isHit(e, gridIndex) : handlePlaceShip
               } // Updating placedShips and availableShips states and setting currentShip back to null
             ></div>
