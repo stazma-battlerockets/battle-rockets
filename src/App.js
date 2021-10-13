@@ -1,12 +1,63 @@
 import "./App.scss";
-import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from "./components/Header";
 import PlayerSelection from "./components/PlayerSelection";
-import GamePlay from "./components/GamePlay";
-import GameSetup from "./components/GameSetup";
-
+import BattleRocketGrid from "./components/BattleRocketGrid";
+import GetRockets from "./components/GetRockets";
+import realtime from './components/firebase.js';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { ref, set, onValue } from 'firebase/database';
 
 function App() {
+
+  // State to control whether the game grid shows
+  const [showGame, setShowGame] = useState(false);
+  
+  // State to control which players are ready
+
+  const [playerOneReady, setPlayerOneReady]=  useState(false);
+  const [playerTwoReady, setPlayerTwoReady] = useState(false);
+  // Function to display board on Game mode
+  const readyToPlay = (player, status=true) => {
+    setShowGame(!showGame);
+    handlePlayerReady(player, status);
+  };
+
+  // Handling updating the Firebase table with the ready values
+  const handlePlayerReady = (player, status) => {
+    const playerNodeRef = ref(realtime, `players/${player}/ready`);
+
+    set(playerNodeRef, status);
+  }
+
+
+
+  // Getting the data
+  useEffect(() => {
+    const dbRef = ref(realtime, 'players');
+    // We grab a snapshot of our database and use the .val method to parse the JSON object that is our database data out of it
+    onValue(dbRef, (snapshot) => {
+
+      const players = snapshot.val();
+
+      const newPlayers = [];
+
+      for (let propName in players) {
+        const newPlayer = {
+          player: propName,
+          data: players[propName]
+        }
+
+        newPlayers.push(newPlayer);
+      }
+
+      setPlayerOneReady(newPlayers[0].data.ready);
+      setPlayerTwoReady(newPlayers[1].data.ready);
+
+    });
+
+  }, []);
+
   return (
     <Router>
       <div className="wrapper">
@@ -16,22 +67,50 @@ function App() {
               <Header />
               <PlayerSelection />
             </div>
+            <GetRockets />
           </Route>
+
+
 
           <Route path="/playerOne">
             <Header />
-            <GameSetup player="playerOne" />
+            
+            <BattleRocketGrid 
+              setup={true}
+              player={1}
+              readyToPlay={readyToPlay}
+            />
+            
+
+            {showGame && (playerOneReady && playerTwoReady) ?
+              <BattleRocketGrid 
+                setup={false} 
+                player={1}/> : null
+            }
+            
           </Route>
 
           <Route path='/playerTwo' >
             <Header />
-            <GameSetup player="playerTwo" />
+            <BattleRocketGrid 
+              setup={true}
+              player={2}
+              readyToPlay={readyToPlay} />
+              
+            {showGame && (playerOneReady && playerTwoReady) ?
+              <BattleRocketGrid 
+              setup={false}
+              player={2} />
+              : null
+            }
+          
+            
           </Route>
-
+{/* 
           <Route path='/game'>
             <GamePlay player='playerOne' />
             <GamePlay player='playerTwo' />
-          </Route>
+          </Route> */}
 
         </main>
       </div>
@@ -72,3 +151,4 @@ export default App;
 
 // // FUTURE QUESTION //
 // - what happens if one player leaves?
+

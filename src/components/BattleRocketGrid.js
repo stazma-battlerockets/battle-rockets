@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { ref, set, get } from 'firebase/database';
+import { useBeforeunload } from 'react-beforeunload'
+import realtime from './firebase';
 
-const BattleRocketGrid = ({player}) => {
+const BattleRocketGrid = ({setup, player, readyToPlay}) => {
+  
   // An array of objects -> ship name, X and Y coords and if ship has been placed
-
   const allShips = [
     {
       name: "destroyer",
@@ -41,6 +44,10 @@ const BattleRocketGrid = ({player}) => {
     },
   ];
 
+  // ===========================================
+  // All States
+  // ===========================================
+
   // State to hold ship object
   const [currentShip, setCurrentShip] = useState(null);
 
@@ -70,7 +77,10 @@ const BattleRocketGrid = ({player}) => {
     }
   };
 
+  // ===========================================
   // Handling the placement of the ships in real time
+  // ===========================================
+
   const handleMouseEnter = (gridIndex) => {
     // Our ship position
     let shipPosition = gridIndex;
@@ -94,23 +104,11 @@ const BattleRocketGrid = ({player}) => {
     }
   };
 
-  // Handling logic for seeing if ship coords are out of bounds
-  const handleOutOfBounds = (shipCoords, gridIndex) => {
-    let outOfBounds = false;
 
-    if (horizontal) {
-      outOfBounds = shipCoords.some((coordX) => {
-        // eg. 37, 38, 39, 40 -> after the Math.floor -> 3, 3, 3, 4
-        return Math.floor(coordX / 10) !== Math.floor(gridIndex / 10);
-      });
-    } else if (!horizontal) {
-      outOfBounds = shipCoords.some((coordY) => coordY > 99);
-    }
 
-    return outOfBounds;
-  };
-
+  // ===========================================
   // Placing current ship into placed ships
+  // ===========================================
   const handlePlaceShip = () => {
     if (currentShip) {
       if (currentShip.coords !== undefined) {
@@ -128,7 +126,7 @@ const BattleRocketGrid = ({player}) => {
         } else {
           // Local variable to check if ship coords are matching
           let isMatch = false;
-          // Callback function to pass into .some() to compare coords between two arrays - currentShip.coords and placedship.coords
+          // Callback function to pass into .some() to compare coords between two arrays - currentShip.coords and placedShip.coords
           const compareCoords = (coords) => {
             // Check currentShip length and we stop this loop if isMatch = true
             for (let i = 0; i < currentShip.coords.length && !isMatch; i++) {
@@ -159,7 +157,28 @@ const BattleRocketGrid = ({player}) => {
     }
   };
 
+  // ===========================================
+  // Handling logic for seeing if ship coords are out of bounds
+  // ===========================================
+  const handleOutOfBounds = (shipCoords, gridIndex) => {
+  let outOfBounds = false;
+
+  if (horizontal) {
+      outOfBounds = shipCoords.some((coordX) => {
+      // eg. 37, 38, 39, 40 -> after the Math.floor -> 3, 3, 3, 4
+      return Math.floor(coordX / 10) !== Math.floor(gridIndex / 10);
+      });
+  } else if (!horizontal) {
+      outOfBounds = shipCoords.some((coordY) => coordY > 99);
+  }
+
+  return outOfBounds;
+  };
+
+
+  // ===========================================
   // Reset the whole grid and states
+  // ===========================================
   const resetGrid = () => {
     setCurrentShip(null);
     setPlacedShips([]);
@@ -167,7 +186,9 @@ const BattleRocketGrid = ({player}) => {
     setShipsReady(false);
   };
 
+  // ===========================================
   // Checking to see if the ship has already placed in a particular square of the grid
+  // ===========================================
   const occupiedPlacedShip = (gridIndex) => {
     // Should return TRUE if any of the placed ships' coords include the gridIndex
     return placedShips.some((placedShip) => {
@@ -175,7 +196,9 @@ const BattleRocketGrid = ({player}) => {
     });
   };
 
-  //
+  // ===========================================
+  // Checking to see if the ship has been hit
+  // ===========================================
   const occupiedHitShip = (gridIndex) => {
     // Should return TRUE if any of the placed ships' coords include the gridIndex
     return placedShips.some((placedShip) => {
@@ -183,14 +206,18 @@ const BattleRocketGrid = ({player}) => {
     });
   };
 
-  //
+  // ===========================================
+  // Checking to see if the ship has been sunk
+  // ===========================================
   const occupiedSunkShip = (gridIndex) => {
     return placedShips.some((placedShip) => {
       return placedShip.isHit.includes(gridIndex) && placedShip.isSunk;
     });
   };
 
+  // ===========================================
   // Checking to see which of the current state coords overlap with each grid square
+  // ===========================================
   const occupiedCurrentShip = (gridIndex) => {
     if (currentShip) {
       if (currentShip.coords !== undefined) {
@@ -201,26 +228,34 @@ const BattleRocketGrid = ({player}) => {
     }
   };
 
-  // Checking to see if a particular square of the grid is occupied using either the placed or current ships
+  // ===========================================
+  // Main function to determine if any square is occupied, calling the above functions
+  // ===========================================
   const occupiedGridSquare = (gridIndex) => {
     let isOccupied = "empty";
 
-    if (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)) {
-      isOccupied = "displayShip";
+    if (setup === true)  {
+      if (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)) {
+        isOccupied = "displayShip";
+      } 
     }
 
-    if (occupiedHitShip(gridIndex)) {
-      isOccupied = "hit";
-    }
-
-    if (occupiedSunkShip(gridIndex)) {
-      isOccupied = "sunk";
+    if (placedShips.length !== 0  && setup === false) {
+      if (occupiedHitShip(gridIndex)) {
+        isOccupied = "hit";
+      }
+  
+      if (occupiedSunkShip(gridIndex)) {
+        isOccupied = "sunk";
+      }
     }
 
     return isOccupied;
   };
 
-  // Updating the isHit property for the hit ship
+  // ===========================================
+  // Preparing an altered instance of the placedShips array for when we set state
+  // ===========================================
   const changeIsHit = (ships, newIndex, square) => {
     let newShips = [...ships];
     let newShip = { ...ships[newIndex] };
@@ -240,25 +275,74 @@ const BattleRocketGrid = ({player}) => {
     return [...newShips];
   };
 
+  // ===========================================
+  // If the ship is hit to update the classNames
+  // ===========================================
   const isHit = (e, target) => {
     placedShips.forEach((placedShip, index) => {
       placedShip.coords.forEach((coord) => {
         if (coord === target && !placedShip.isHit.includes(target)) {
           setPlacedShips(changeIsHit(placedShips, index, target));
+        } else if(coord !== target && (e.target.classList.contains("empty"))) {
+          e.target.classList.remove("empty");
+          e.target.classList.add("miss");
         }
       });
     });
-    if (e.target.classList.contains("empty")) {
-      e.target.classList.remove("empty");
-      e.target.classList.add("miss");
-    }
+
   };
 
+  // On page refresh or close we reset the grid and change the status of the player back to false
+  useBeforeunload (() => {
+    readyToPlay(player, false);
+    resetGrid();
+  })
 
+  // Handle to placing placedShips into Firebase // only in the setup 
+const setGameData = () => {
+  const playerNodeRef = ref(realtime, `players/${player}/placedShips`);
+
+  set(playerNodeRef, placedShips);
+};
+
+// Only in the 
+const getGameData = () => {
+  let playerNum;
+
+  if (player === 1) {
+    playerNum = 2;
+  } else if (player === 2) {
+    playerNum = 1;
+  }
+  const playerNodeRef = ref(realtime, `players/${playerNum}/placedShips`);
+  
+  let dataArray = [];
+
+  get(playerNodeRef).then((snapshot)=>{
+      const data = snapshot.val();
+      // console.log(data);
+
+      data.forEach((ship)=>{
+        dataArray.push({...ship, isHit: []});
+      })
+  }).then(()=>{
+    // console.log(dataArray);
+    setPlacedShips(dataArray);
+  })
+
+}
+
+
+  
 
   return (
     // setShip type value hardcoded for each ship div so that shipType is toggled depending on which div is clicked
     <section className="gameBoard">
+
+
+      {/* Whole set up section */}
+      { setup ? 
+      (
       <div className="shipSelection">
         {/* Conditionally map the available ship selectors based on the availableShips state*/}
         {availableShips.map((availableShip) => {
@@ -280,11 +364,19 @@ const BattleRocketGrid = ({player}) => {
 
         {/* Ready to play button only available once the ships are all placed */}
         {placedShips.length === 5 ? (
-          <button onClick={() => setShipsReady(true)}>
+          <button onClick={() => {
+            setShipsReady(true);
+            readyToPlay(player);
+            setGameData();
+          }}>
             {shipsReady ? "Time for battle!" : "Ready to Play"}
           </button>
         ) : null}
+
       </div>
+      ) : <button onClick={getGameData}>Start!</button>
+      }
+    
 
       <div
         className="gridContent"
@@ -300,7 +392,10 @@ const BattleRocketGrid = ({player}) => {
               onMouseEnter={() => handleMouseEnter(gridIndex)}
               onClick={
 
-                shipsReady ? (e) => isHit(e, gridIndex) : handlePlaceShip
+                setup ? 
+
+                (shipsReady ? null : handlePlaceShip) :
+                (e) => isHit(e, gridIndex)
               } // Updating placedShips and availableShips states and setting currentShip back to null
             ></div>
           );
@@ -310,4 +405,11 @@ const BattleRocketGrid = ({player}) => {
   );
 };
 
+
 export default BattleRocketGrid;
+
+
+
+
+
+    
