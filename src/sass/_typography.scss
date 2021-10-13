@@ -8,3 +8,10 @@ h2,
 h3 {
   font-family: $headingFont;
 }
+
+header h1 {
+  text-transform: uppercase;
+  font-size: 6rem;
+  color: $yellow;
+  text-shadow: 2px 3px $navy, 4px 6px $red;
+}

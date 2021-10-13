@@ -1,19 +1,41 @@
 import "./App.scss";
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from "./components/Header";
 import PlayerSelection from "./components/PlayerSelection";
+import GamePlay from "./components/GamePlay";
+import GameSetup from "./components/GameSetup";
 
-import BattleRocketGrid from "./components/BattleRocketGrid";
 
 function App() {
   return (
-    <div className="wrapper">
-      <Header />
-      <main>
-        <PlayerSelection />
-        <BattleRocketGrid />
-      
-      </main>
-    </div>
+    <Router>
+      <div className="wrapper">
+        <main>
+          <Route exact path="/">
+            <div className="welcomePage">
+              <Header />
+              <PlayerSelection />
+            </div>
+          </Route>
+
+          <Route path="/playerOne">
+            <Header />
+            <GameSetup player="playerOne" />
+          </Route>
+
+          <Route path='/playerTwo' >
+            <Header />
+            <GameSetup player="playerTwo" />
+          </Route>
+
+          <Route path='/game'>
+            <GamePlay player='playerOne' />
+            <GamePlay player='playerTwo' />
+          </Route>
+
+        </main>
+      </div>
+    </Router>
   );
 }
 

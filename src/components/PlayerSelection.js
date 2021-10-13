@@ -1,32 +1,23 @@
 // import { useState } from 'react'
-
+import { Link } from 'react-router-dom';
 const PlayerSelection = () => {
 
-// const [playerOne, setPlayerOne] = useState(false);
-// const [playerTwo, setPlayerTwo] = useState(false);
+  // const [playerOne, setPlayerOne] = useState(false);
+  // const [playerTwo, setPlayerTwo] = useState(false);
 
   return (
     <section className="playerSelection">
-      <form action="">
-        <label htmlFor="playerOne">Player One</label>
-        <input
-          type="radio"
-          id="playerOne"
-          name="playerSelection"
-          value="playerOne"
-        />
 
-        <label htmlFor="playerTwo">Player Two</label>
-        <input
-          type="radio"
-          id="playerTwo"
-          name="playerSelection"
-          value="playerTwo"
-        />
+      <Link to="/playerOne">
+        <button className="readyBtn playerOne">Player 1</button>
+      </Link>
 
-        <button type="submit">Ready!</button>
-      </form>
-    </section>
+      <Link to="/playerTwo">
+        <button className="readyBtn playerTwo">Player 2</button>
+
+      </Link>
+
+    </section >
   );
 };
 
