@@ -11,7 +11,7 @@ const GetRockets = () => {
   const [selectedType, setSelectedType] = useState('');
   // Holds the roster of selected ships/rockets 
   // Will hold limited data - 
-  const [selectedRoster, setSelectedRoster] = useState([]);
+  // const [selectedRoster, setSelectedRoster] = useState([]);
 
   const apiEndpoint = "https://api.spacexdata.com/v4";
 
@@ -127,18 +127,5 @@ const GetRockets = () => {
 
 export default GetRockets;
 
-// rockets
-      // console.log(results.data);
-      // company
-      // name: 
-      // description
-      // type
-      // first flight
-      // height.meters
-      // stages
-      // mass
-      // flickr_images[0] 
-      // success_rate_pct
 
-      // const {company, name, description, type, first_flight, height, stages, mass, flickr_images, success_rate_pct }
 
