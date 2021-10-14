@@ -90,6 +90,8 @@ function App() {
             
           </Route>
 
+          <Route path="/playerOne/"></Route>
+
           <Route path='/playerTwo' >
             <Header />
             <BattleRocketGrid 
@@ -152,3 +154,7 @@ export default App;
 // // FUTURE QUESTION //
 // - what happens if one player leaves?
 
+// TODO
+// Control who's turn - firebase
+// Notify player if hit, miss, sunk and WIN/LOSE 
+// Roster of each player 
