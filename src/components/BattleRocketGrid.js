@@ -3,8 +3,8 @@ import { ref, set, get } from 'firebase/database';
 import { useBeforeunload } from 'react-beforeunload'
 import realtime from './firebase';
 
-const BattleRocketGrid = ({setup, player, readyToPlay}) => {
-  
+const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
+
   // An array of objects -> ship name, X and Y coords and if ship has been placed
   const allShips = [
     {
@@ -161,18 +161,18 @@ const BattleRocketGrid = ({setup, player, readyToPlay}) => {
   // Handling logic for seeing if ship coords are out of bounds
   // ===========================================
   const handleOutOfBounds = (shipCoords, gridIndex) => {
-  let outOfBounds = false;
+    let outOfBounds = false;
 
-  if (horizontal) {
+    if (horizontal) {
       outOfBounds = shipCoords.some((coordX) => {
-      // eg. 37, 38, 39, 40 -> after the Math.floor -> 3, 3, 3, 4
-      return Math.floor(coordX / 10) !== Math.floor(gridIndex / 10);
+        // eg. 37, 38, 39, 40 -> after the Math.floor -> 3, 3, 3, 4
+        return Math.floor(coordX / 10) !== Math.floor(gridIndex / 10);
       });
-  } else if (!horizontal) {
+    } else if (!horizontal) {
       outOfBounds = shipCoords.some((coordY) => coordY > 99);
-  }
+    }
 
-  return outOfBounds;
+    return outOfBounds;
   };
 
 
@@ -234,17 +234,17 @@ const BattleRocketGrid = ({setup, player, readyToPlay}) => {
   const occupiedGridSquare = (gridIndex) => {
     let isOccupied = "empty";
 
-    if (setup === true)  {
+    if (setup === true) {
       if (occupiedPlacedShip(gridIndex) || occupiedCurrentShip(gridIndex)) {
         isOccupied = "displayShip";
-      } 
+      }
     }
 
-    if (placedShips.length !== 0  && setup === false) {
+    if (placedShips.length !== 0 && setup === false) {
       if (occupiedHitShip(gridIndex)) {
         isOccupied = "hit";
       }
-  
+
       if (occupiedSunkShip(gridIndex)) {
         isOccupied = "sunk";
       }
@@ -283,7 +283,7 @@ const BattleRocketGrid = ({setup, player, readyToPlay}) => {
       placedShip.coords.forEach((coord) => {
         if (coord === target && !placedShip.isHit.includes(target)) {
           setPlacedShips(changeIsHit(placedShips, index, target));
-        } else if(coord !== target && (e.target.classList.contains("empty"))) {
+        } else if (coord !== target && (e.target.classList.contains("empty"))) {
           e.target.classList.remove("empty");
           e.target.classList.add("miss");
         }
@@ -293,47 +293,47 @@ const BattleRocketGrid = ({setup, player, readyToPlay}) => {
   };
 
   // On page refresh or close we reset the grid and change the status of the player back to false
-  useBeforeunload (() => {
+  useBeforeunload(() => {
     readyToPlay(player, false);
     resetGrid();
   })
 
   // Handle to placing placedShips into Firebase // only in the setup 
-const setGameData = () => {
-  const playerNodeRef = ref(realtime, `players/${player}/placedShips`);
+  const setGameData = () => {
+    const playerNodeRef = ref(realtime, `players/${player}/placedShips`);
 
-  set(playerNodeRef, placedShips);
-};
+    set(playerNodeRef, placedShips);
+  };
 
-// Only in the 
-const getGameData = () => {
-  let playerNum;
+  // Only in the 
+  const getGameData = () => {
+    let playerNum;
 
-  if (player === 1) {
-    playerNum = 2;
-  } else if (player === 2) {
-    playerNum = 1;
-  }
-  const playerNodeRef = ref(realtime, `players/${playerNum}/placedShips`);
-  
-  let dataArray = [];
+    if (player === 1) {
+      playerNum = 2;
+    } else if (player === 2) {
+      playerNum = 1;
+    }
+    const playerNodeRef = ref(realtime, `players/${playerNum}/placedShips`);
 
-  get(playerNodeRef).then((snapshot)=>{
+    let dataArray = [];
+
+    get(playerNodeRef).then((snapshot) => {
       const data = snapshot.val();
       // console.log(data);
 
-      data.forEach((ship)=>{
-        dataArray.push({...ship, isHit: []});
+      data.forEach((ship) => {
+        dataArray.push({ ...ship, isHit: [] });
       })
-  }).then(()=>{
-    // console.log(dataArray);
-    setPlacedShips(dataArray);
-  })
+    }).then(() => {
+      // console.log(dataArray);
+      setPlacedShips(dataArray);
+    })
 
-}
+  }
 
 
-  
+
 
   return (
     // setShip type value hardcoded for each ship div so that shipType is toggled depending on which div is clicked
@@ -341,42 +341,42 @@ const getGameData = () => {
 
 
       {/* Whole set up section */}
-      { setup ? 
-      (
-      <div className="shipSelection">
-        {/* Conditionally map the available ship selectors based on the availableShips state*/}
-        {availableShips.map((availableShip) => {
-          return (
-            <div
-              key={availableShip.name}
-              className={`${availableShip.name}Select`}
-              onClick={() => setCurrentShip(availableShip)}
-            ></div>
-          );
-        })}
+      {setup ?
+        (
+          <div className="shipSelection">
+            {/* Conditionally map the available ship selectors based on the availableShips state*/}
+            {availableShips.map((availableShip) => {
+              return (
+                <div
+                  key={availableShip.name}
+                  className={`${availableShip.name}Select`}
+                  onClick={() => setCurrentShip(availableShip)}
+                ></div>
+              );
+            })}
 
-        <p>Right click to rotate.</p>
+            <p>Right click to rotate.</p>
 
-        {/* Reset the grid and placed ships */}
-        {placedShips.length !== 5 || !shipsReady ? (
-          <button onClick={resetGrid}>Reset Grid</button>
-        ) : null}
+            {/* Reset the grid and placed ships */}
+            {placedShips.length !== 5 || !shipsReady ? (
+              <button onClick={resetGrid}>Reset Grid</button>
+            ) : null}
 
-        {/* Ready to play button only available once the ships are all placed */}
-        {placedShips.length === 5 ? (
-          <button onClick={() => {
-            setShipsReady(true);
-            readyToPlay(player);
-            setGameData();
-          }}>
-            {shipsReady ? "Time for battle!" : "Ready to Play"}
-          </button>
-        ) : null}
+            {/* Ready to play button only available once the ships are all placed */}
+            {placedShips.length === 5 ? (
+              <button onClick={() => {
+                setShipsReady(true);
+                readyToPlay(player);
+                setGameData();
+              }}>
+                {shipsReady ? "Time for battle!" : "Ready to Play"}
+              </button>
+            ) : null}
 
-      </div>
-      ) : <button onClick={getGameData}>Start!</button>
+          </div>
+        ) : <button onClick={getGameData}>Start!</button>
       }
-    
+
 
       <div
         className="gridContent"
@@ -392,10 +392,10 @@ const getGameData = () => {
               onMouseEnter={() => handleMouseEnter(gridIndex)}
               onClick={
 
-                setup ? 
+                setup ?
 
-                (shipsReady ? null : handlePlaceShip) :
-                (e) => isHit(e, gridIndex)
+                  (shipsReady ? null : handlePlaceShip) :
+                  (e) => isHit(e, gridIndex)
               } // Updating placedShips and availableShips states and setting currentShip back to null
             ></div>
           );
@@ -412,4 +412,3 @@ export default BattleRocketGrid;
 
 
 
-    
