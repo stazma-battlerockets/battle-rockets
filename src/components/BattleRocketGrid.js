@@ -82,11 +82,22 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
     gridArray.push(i);
   }
 
+  // ===========================================
   // Used to toggle the orientation of the ship placement with a mouse right click
+  // ===========================================
+
   const rotateShip = (e) => {
     if (e.button === 2) {
       setHorizontal(!horizontal);
     }
+  };
+
+  // ===========================================
+  // Used to toggle the orientation of the ship placement with a button for mobile
+  // ===========================================
+
+  const rotateShipMobile = () => {
+    setHorizontal(!horizontal);
   };
 
   // ===========================================
@@ -462,6 +473,8 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
       {setup ? (
         <div className="shipSelection">
           {/* Conditionally map the available ship selectors based on the availableShips state*/}
+
+
           {availableShips.map((availableShip) => {
             return (
               <div
@@ -472,7 +485,21 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
             );
           })}
 
-          {shipsReady ? null : <p>Right click to rotate.</p>}
+
+
+          {shipsReady ? null : <>
+            <p>Tap ship to select</p>
+
+            {
+              window.innerWidth > 600 ? 
+              <p>Right click to rotate.</p> : 
+              <button className="rotateMobile gameText" onClick={rotateShipMobile}>
+                Rotate Ship
+              </button>
+            }
+
+          </>
+          }
 
           {/* Reset the grid and placed ships */}
           {placedShips.length !== 5 || !shipsReady ? (
