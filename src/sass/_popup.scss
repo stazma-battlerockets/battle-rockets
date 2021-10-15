@@ -1,0 +1,37 @@
+/* Game over submission popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(207, 207, 207, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popupInner {
+    position: relative;
+    padding: 32px;
+    width: 100%;
+    max-width: 640px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px 5px #000000;
+
+    .winner {
+        background-color: #fff;
+        color: black;
+        border: none;
+        text-transform: uppercase;
+    }
+}
+
+.closeBtn {
+    padding: 0.5rem;
+    margin-top: 2rem;
+}

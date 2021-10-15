@@ -1,36 +1,45 @@
-import "./App.scss";
 import Header from "./components/Header";
 import PlayerSelection from "./components/PlayerSelection";
 import BattleRocketGrid from "./components/BattleRocketGrid";
-import GetRockets from "./components/GetRockets";
-import realtime from "./components/firebase.js";
+// import GetRockets from "./components/GetRockets";
 import Footer from "./components/Footer";
+
+import realtime from "./components/firebase.js";
+
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ref, set, onValue } from "firebase/database";
+
+import "./App.scss";
 
 function App() {
   // State to control whether the game grid shows
   const [showGame, setShowGame] = useState(false);
 
-  // State to control which players are ready
-
+  // States to control which players are ready
   const [playerOneReady, setPlayerOneReady] = useState(false);
   const [playerTwoReady, setPlayerTwoReady] = useState(false);
+
+  // ===========================================
   // Function to display board on Game mode
+  // =========================================== 
   const readyToPlay = (player, status = true) => {
     setShowGame(!showGame);
     handlePlayerReady(player, status);
   };
 
+  // ===========================================
   // Handling updating the Firebase table with the ready values
+  // ===========================================
   const handlePlayerReady = (player, status) => {
     const playerNodeRef = ref(realtime, `players/${player}/ready`);
 
     set(playerNodeRef, status);
   };
 
-  // Getting the data
+  // ===========================================
+  // Grabbing player ready statuses from Firebase
+  // ===========================================
   useEffect(() => {
     const dbRef = ref(realtime, `players`);
     // We grab a snapshot of our database and use the .val method to parse the JSON object that is our database data out of it
@@ -53,6 +62,9 @@ function App() {
     });
   }, []);
 
+  // ===========================================
+  // Main Return
+  // ===========================================
   return (
     <Router>
       <div className="wrapper">
@@ -64,9 +76,9 @@ function App() {
             </div>
           </Route>
 
-          <Route path="/player1/selection">
+          {/* <Route path="/player1/selection">
             <GetRockets player={1} />
-          </Route>
+          </Route> */}
 
           <Route path="/player1/game">
             <Header />
@@ -82,9 +94,9 @@ function App() {
             ) : null}
           </Route>
 
-          <Route path="/player2/selection">
+          {/* <Route path="/player2/selection">
             <GetRockets player={2} />
-          </Route>
+          </Route> */}
 
           <Route path="/player2/game">
             <Header />

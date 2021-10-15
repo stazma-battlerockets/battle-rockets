@@ -1,0 +1,21 @@
+.selectionForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.selectedInfo {
+    display: flex;
+    flex-direction: column;
+
+    .shipInfo {
+        display: flex;
+    }
+
+    .imageContainer {
+        max-width: 40%;
+    }
+
+    .infoContainer {
+        max-width: 60%;
+    }
+}

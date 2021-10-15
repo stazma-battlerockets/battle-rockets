@@ -1,0 +1,95 @@
+@media (max-width: 850px) {
+    $squareSize: 40px;
+
+    @mixin shipSize($length) {
+        height: $squareSize;
+        width: $length * $squareSize;
+        background: $yellow;
+        box-shadow: 2px 2px $navy;
+    }
+
+    .gridContent {
+        width: $squareSize * 10;
+        height: $squareSize * 10;
+
+        .gridSquare {
+            width: $squareSize;
+            height: $squareSize;
+        }
+    }
+
+    .shipSelection .destroyerSelect {
+        @include shipSize(2);
+    }
+
+    .submarineSelect {
+        @include shipSize(3);
+    }
+
+    .cruiserSelect {
+        @include shipSize(3);
+    }
+
+    .battleshipSelect {
+        @include shipSize(4);
+    }
+
+    .carrierSelect {
+        @include shipSize(5);
+    }
+}
+
+@media (max-width: 720px) {
+    $squareSize: 30px;
+
+    @mixin shipSize($length) {
+        height: $squareSize;
+        width: $length * $squareSize;
+        background: $yellow;
+        box-shadow: 2px 2px $navy;
+    }
+
+    .gridContent {
+        width: $squareSize * 10;
+        height: $squareSize * 10;
+
+        .gridSquare {
+            width: $squareSize;
+            height: $squareSize;
+        }
+    }
+
+    .shipSelection {
+        .destroyerSelect {
+            @include shipSize(2);
+        }
+        .submarineSelect {
+            @include shipSize(3);
+        }
+
+        .cruiserSelect {
+            @include shipSize(3);
+        }
+        .battleshipSelect {
+            @include shipSize(4);
+        }
+        .carrierSelect {
+            @include shipSize(5);
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 4rem;
+    }
+
+    .gameBoard {
+        flex-direction: column;
+    }
+
+    .startBattle,
+    .shipSelection {
+        margin-right: 0;
+    }
+}

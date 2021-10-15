@@ -1,14 +1,14 @@
 const Footer = () => {
   return (
-    <div>
+    <footer>
       <p>
         Created at{" "}
         <a href="https://junocollege.com/" target="_blank" rel="noreferrer">
           Juno College{" "}
         </a>{" "}
-        @ 2021
+        2021
       </p>
-    </div>
+    </footer>
   );
 };
 

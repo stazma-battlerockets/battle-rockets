@@ -1,0 +1,83 @@
+.gameBoard {
+    display: flex;
+    align-items: center;
+    p {
+        color: $yellow;
+        background: $navy;
+        padding: 0.5rem;
+        border: 1px solid $yellow;
+    }
+}
+
+.gridContent {
+    width: $squareSize * 10;
+    height: $squareSize * 10;
+    background: url("../assets/stars.jpg");
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2rem auto;
+    box-shadow: 0px 0px 10px 10px $navy;
+    .gridSquare {
+        width: $squareSize;
+        height: $squareSize;
+        outline: 0.4px solid white;
+        box-shadow: 2px 2px $navy;
+    }
+    .displayShip {
+        background-color: $yellow;
+    }
+
+    .hit {
+        background-color: $red;
+    }
+
+    .miss {
+        background-color: rgba(255, 255, 255, 0.7);
+    }
+
+    .sunk {
+        background-color: #000000;
+    }
+}
+
+.gameText {
+    padding: 0.5rem 2rem;
+    margin: 2% 0;
+    min-width: 205px;
+}
+
+.gameTextContainer {
+
+    .sunkShip span {
+        display: block;
+    }
+}
+
+.shipSelection {
+    .destroyerSelect {
+        @include shipSize(2);
+    }
+    .submarineSelect {
+        @include shipSize(3);
+    }
+
+    .cruiserSelect {
+        @include shipSize(3);
+    }
+    .battleshipSelect {
+        @include shipSize(4);
+    }
+    .carrierSelect {
+        @include shipSize(5);
+    }
+    div {
+        margin-bottom: 1rem;
+    }
+}
+
+.shipSelection,
+.gameTextContainer {
+    display: flex;
+    flex-direction: column;
+    margin-right: 5%;
+}
