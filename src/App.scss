@@ -36,6 +36,10 @@
   display: none;
 }
 
+.hidden {
+  display: none;
+}
+
 .sunk {
   background-color: #000000;
 }
@@ -43,6 +47,12 @@
 .gameBoard {
   display: flex;
   align-items: center;
+  position: relative;
+}
+
+.shipSelection {
+  position: absolute;
+  left: 0;
 }
 
 .forbidden {
@@ -71,15 +81,14 @@
 }
 
 .welcomePage {
-  display: flex;  
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-
-.shipSelection {
+.gameBoard .shipSelection {
   p {
     color: $yellow;
     background: $navy;
@@ -88,26 +97,48 @@
   }
 }
 
-.resetGrid, .startBattle{
+.resetGrid,
+.startBattle {
   padding: 0.5rem 4rem;
   margin: 1rem 0;
 }
 
-
-
 .rosterSelection {
-  display: flex;
-  height: 50vh;
-  & > * {
-    width: 33%;
-    margin: 2% 0;
-  }
-  .selectionForm {
-    display: flex;
-    flex-direction: column;
+  h2 {
+    margin-top: 4rem;
   }
 }
 
+.selectionForm {
+  display: flex;
+  flex-direction: column;
+}
 
+.selectedInfo {
+  display: flex;
+  flex-direction: column;
 
+  .shipInfo {
+    display: flex;
+  }
 
+  .imageContainer {
+    max-width: 40%;
+  }
+
+  .infoContainer {
+    max-width: 60%;
+  }
+}
+
+.playerTurn {
+  color: $yellow;
+}
+
+footer {
+  color: $yellow;
+  a {
+    text-decoration: none;
+    color: $yellow;
+  }
+}
