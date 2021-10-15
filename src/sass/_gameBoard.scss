@@ -5,6 +5,7 @@
         color: $yellow;
         background: $navy;
         padding: 0.5rem;
+        margin: 2% 0;
         border: 1px solid $yellow;
     }
 }
@@ -71,7 +72,7 @@
         @include shipSize(5);
     }
     div {
-        margin-bottom: 1rem;
+        margin: 2% 0;
     }
 }
 
