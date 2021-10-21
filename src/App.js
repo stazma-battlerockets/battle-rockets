@@ -13,18 +13,14 @@ import { ref, set, onValue } from "firebase/database";
 import "./App.scss";
 
 function App() {
-  // State to control whether the game grid shows
-  const [showGame, setShowGame] = useState(false);
-
   // States to control which players are ready
   const [playerOneReady, setPlayerOneReady] = useState(false);
   const [playerTwoReady, setPlayerTwoReady] = useState(false);
 
   // ===========================================
   // Function to display board on Game mode
-  // =========================================== 
+  // ===========================================
   const readyToPlay = (player, status = true) => {
-    setShowGame(!showGame);
     handlePlayerReady(player, status);
   };
 
@@ -89,7 +85,7 @@ function App() {
               readyToPlay={readyToPlay}
             />
 
-            {showGame && playerOneReady && playerTwoReady ? (
+            {playerOneReady && playerTwoReady ? (
               <BattleRocketGrid setup={false} player={1} />
             ) : null}
           </Route>
@@ -106,7 +102,7 @@ function App() {
               readyToPlay={readyToPlay}
             />
 
-            {showGame && playerOneReady && playerTwoReady ? (
+            {playerOneReady && playerTwoReady ? (
               <BattleRocketGrid setup={false} player={2} />
             ) : null}
           </Route>

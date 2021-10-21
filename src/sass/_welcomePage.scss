@@ -1,12 +1,21 @@
 .welcomePage {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .placed,
 .hidden {
-    display: none;
+  display: none;
+}
+
+.resetBtnContainer {
+  margin-top: 10rem;
+
+  button {
+    background: $red;
+    color: $yellow;
+  }
 }

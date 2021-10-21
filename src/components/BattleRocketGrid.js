@@ -325,7 +325,6 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
   // If the ship is hit to update the classNames
   // ===========================================
   const isHit = (target) => {
-
     if (!yourShot.includes(target)) {
       setPlayerTurn();
     }
@@ -356,11 +355,15 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
     resetShotsTaken();
     setPlayerSelected(player, false);
   };
+
   // ===========================================
-  // Setting player selected into Firebase 
+  // Setting player selected into Firebase
   // ===========================================
   const setPlayerSelected = (player, status) => {
-    const playerSelectRef = ref(realtime, `playerSelection/player${player}Selected`);
+    const playerSelectRef = ref(
+      realtime,
+      `playerSelection/player${player}Selected`
+    );
 
     set(playerSelectRef, status);
   };
@@ -466,14 +469,12 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
     set(playerTurnRef, player === 1 ? false : true);
   };
 
-
   return (
     <section className="gameBoard">
       {/* Whole set up section */}
       {setup ? (
         <div className="shipSelection">
           {/* Conditionally map the available ship selectors based on the availableShips state*/}
-
 
           {availableShips.map((availableShip) => {
             return (
@@ -485,21 +486,22 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
             );
           })}
 
+          {shipsReady ? null : (
+            <>
+              <p>Tap ship to select</p>
 
-
-          {shipsReady ? null : <>
-            <p>Tap ship to select</p>
-
-            {
-              window.innerWidth > 600 ? 
-              <p>Right click to rotate.</p> : 
-              <button className="rotateMobile gameText" onClick={rotateShipMobile}>
-                Rotate Ship
-              </button>
-            }
-
-          </>
-          }
+              {window.innerWidth > 600 ? (
+                <p>Right click to rotate.</p>
+              ) : (
+                <button
+                  className="rotateMobile gameText"
+                  onClick={rotateShipMobile}
+                >
+                  Rotate Ship
+                </button>
+              )}
+            </>
+          )}
 
           {/* Reset the grid and placed ships */}
           {placedShips.length !== 5 || !shipsReady ? (
@@ -509,8 +511,7 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
           ) : null}
 
           {/* Ready to play button only available once the ships are all placed */}
-          {(placedShips.length === 5 && shipsReady === false) ? (
-
+          {placedShips.length === 5 && shipsReady === false ? (
             <button
               className="battleTime gameText"
               onClick={() => {
@@ -521,35 +522,43 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
             >
               Ready to Play
             </button>
-
-          ) : (shipsReady === true) ? <p className="gameText">Awaiting Opponent</p> : null}
+          ) : shipsReady === true ? (
+            <p className="gameText">Awaiting Opponent</p>
+          ) : null}
         </div>
-      ) : <div className="gameTextContainer">
-        {ready ? (
-          <p className="playerTurn gameText">Player {playerOneTurn ? "1" : "2"} Turn</p>
-        ) : (
-          <button
-            className="startBattle gameText"
-            onClick={() => {
-              getGameData();
-              setReady(true);
-            }}
-          >Start!</button>)}
+      ) : (
+        <div className="gameTextContainer">
+          {ready ? (
+            <p className="playerTurn gameText">
+              Player {playerOneTurn ? "1" : "2"} Turn
+            </p>
+          ) : (
+            <button
+              className="startBattle gameText"
+              onClick={() => {
+                getGameData();
+                setReady(true);
+              }}
+            >
+              Start!
+            </button>
+          )}
 
-        {
-          placedShips.map((placedShip) => {
-            return placedShip.isSunk ? <p className="sunkShip gameText">You have sunk the <span>{placedShip.name.toUpperCase()}</span></p> : null
-          })
-        }
+          {placedShips.map((placedShip) => {
+            return placedShip.isSunk ? (
+              <p className="sunkShip gameText">
+                You have sunk the <span>{placedShip.name.toUpperCase()}</span>
+              </p>
+            ) : null;
+          })}
 
-        {
-          (placedShips.every((placedShip) => {
+          {placedShips.every((placedShip) => {
             return placedShip.isSunk === true;
-          }) && ready === true) ? <Popup trigger={true} outcome="win"></Popup> : null
-        }
-
-      </div>
-      }
+          }) && ready === true ? (
+            <Popup trigger={true} outcome="win"></Popup>
+          ) : null}
+        </div>
+      )}
 
       <div
         className="gridContent"
@@ -559,10 +568,11 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
         {gridArray.map((gridIndex) => {
           return (
             <div
-              className={`gridSquare ${setup === true
-                ? occupiedGridSquare(opponentShot, gridIndex)
-                : occupiedGridSquare(yourShot, gridIndex)
-                }`}
+              className={`gridSquare ${
+                setup === true
+                  ? occupiedGridSquare(opponentShot, gridIndex)
+                  : occupiedGridSquare(yourShot, gridIndex)
+              }`}
               key={`square${gridIndex}`}
               id={`square${gridIndex}`}
               onMouseEnter={() => handleMouseEnter(gridIndex)}
@@ -572,21 +582,18 @@ const BattleRocketGrid = ({ setup, player, readyToPlay }) => {
                     ? null
                     : handlePlaceShip
                   : ready
-                    ? (playerOneTurn === true && player === 1) ||
-                      (playerOneTurn === false && player === 2)
-                      ? () => isHit(gridIndex)
-                      : null
+                  ? (playerOneTurn === true && player === 1) ||
+                    (playerOneTurn === false && player === 2)
+                    ? () => isHit(gridIndex)
                     : null
+                  : null
               }
             ></div>
           );
         })}
       </div>
-
-
     </section>
   );
 };
 
 export default BattleRocketGrid;
-
