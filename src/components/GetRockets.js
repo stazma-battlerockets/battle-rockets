@@ -4,6 +4,9 @@ import realtime from "./firebase";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+// Get rockets
+// Display the available roster with unit information
+// Let the user select roster of rockets, when a unit is selected, remove the unit from the roster list
 const GetRockets = ({ player }) => {
   // States to hold the info from each API call
   const [rockets, setRockets] = useState([]);
@@ -15,7 +18,6 @@ const GetRockets = ({ player }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // Holds the roster of selected ships/rockets
-  // Will hold limited data -
   const [selectedRoster, setSelectedRoster] = useState([]);
 
   const apiEndpoint = "https://api.spacexdata.com/v4";
@@ -53,7 +55,7 @@ const GetRockets = ({ player }) => {
     setRockets(newRocketArray);
   };
 
-  // storing roster in firebase
+  // Store roster in firebase
   const firebaseRoster = (player) => {
     const playerNodeRef = ref(realtime, `players/${player}/roster`);
 
@@ -88,7 +90,7 @@ const GetRockets = ({ player }) => {
         </select>
 
         {/* Capsule Dropdown */}
-        {/* <label htmlFor="capsules">Select a Capsule:</label>
+        <label htmlFor="capsules">Select a Capsule:</label>
         <select name="capsules" id="capsules">
           <option value={null} selected disabled>
             -
@@ -98,10 +100,10 @@ const GetRockets = ({ player }) => {
               {capsule.serial}
             </option>
           ))}
-        </select> */}
+        </select>
 
         {/* Roadster Selection */}
-        {/* <label htmlFor="roadster">Select Roadster (Elon would be proud):</label>
+        <label htmlFor="roadster">Select Roadster (Elon would be proud):</label>
         <select name="roadster" id="roadster">
           <option value={null} selected disabled>
             -
@@ -109,7 +111,7 @@ const GetRockets = ({ player }) => {
           <option key={roadster.id} id={roadster.id} value={roadster.name}>
             {roadster.name}
           </option>
-        </select> */}
+        </select>
       </form>
 
       <div className="selectedInfo">
@@ -166,20 +168,3 @@ const GetRockets = ({ player }) => {
 };
 
 export default GetRockets;
-
-// // {/* Capsule */}
-
-// (selectedType === 'capsule') ?
-// ({
-//   <>
-//   <h2>Serial: {selected.serial}</h2>
-
-//   <p>Status: {selected.status}</p>
-//   <p>Last Update: {selected.last_update}</p>
-//   <p>Type: {selected.type}</p>
-//   <p>Reuse Count: {selected.reuse_count}</p>
-//   <p>Water Landings: {selected.water_landings}</p>
-//   <p>Land Landings: {selected.land_landings}</p>
-// </>
-// })
-// : null
